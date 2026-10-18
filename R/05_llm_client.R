@@ -99,11 +99,11 @@ geo_chat <- function(provider = c("gemini", "claude", "openai", "ollama"),
   chat_obj <- switch(
     provider,
     gemini = {
-      m <- model %||% "gemini-2.5-pro"
+      m <- model %||% "gemini-3.7-flash"
       if (!is.null(api_key)) {
-        ellmer::chat_gemini(model = m, system_prompt = sys_prompt, api_key = api_key, ...)
+        ellmer::chat_google_gemini(model = m, system_prompt = sys_prompt, api_key = api_key, ...)
       } else {
-        ellmer::chat_gemini(model = m, system_prompt = sys_prompt, ...)
+        ellmer::chat_google_gemini(model = m, system_prompt = sys_prompt, ...)
       }
     },
     claude = {
