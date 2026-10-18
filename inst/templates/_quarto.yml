@@ -1,0 +1,22 @@
+project:
+  type: default
+  output-dir: _site
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    fig-responsive: true
+    embed-resources: true
+  pdf:
+    documentclass: scrartcl
+    number-sections: true
+    toc: true
+
+execute:
+  echo: false
+  warning: false
+  message: false

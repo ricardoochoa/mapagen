@@ -1,0 +1,39 @@
+---
+title: "Reporte Técnico de Análisis Territorial"
+subtitle: "Generado dinámicamente con mapagen"
+author: "Equipo de Ciencia de Datos y Análisis Espacial"
+date: today
+format:
+  html:
+    toc: true
+    theme: cosmo
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(mapagen)
+library(ggplot2)
+library(sf)
+library(dplyr)
+```
+
+# Introducción
+
+El presente documento resume los hallazgos territoriales y espaciales del proyecto, estructurado a partir del catálogo de datos y el registro de iteraciones gráficas.
+
+# Registro de Evidencias Cartográficas
+
+A continuación se insertan las figuras registradas formalmente en el proyecto mediante `mapagen::include_figure()`:
+
+```{r}
+#| label: fig-ejemplo
+#| echo: false
+#| results: asis
+# Descomenta y ajusta el ID de figura correspondiente registrado en output/figures_registry.json:
+# mapagen::include_figure("fig_001")
+```
+
+# Conclusiones e Insights
+
+[Este apartado puede enriquecerse con la narrativa generada por el agente LLM a partir de los datos de soporte numérico de las figuras].

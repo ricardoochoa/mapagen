@@ -1,0 +1,38 @@
+Package: mapagen
+Title: Framework Agéntico para Análisis Geoespacial y Visualización en R
+Version: 0.1.0
+Authors@R: 
+    person("Ricardo", "Ochoa Sosa", 
+           email = "ricardo@example.com", 
+           role = c("aut", "cre"))
+Description: Orquesta flujos de trabajo de análisis geoespacial y ciencia de datos en R,
+    integrando catalogación automatizada de datos espaciales y tabulares, estandarización de
+    estilos cartográficos y temas ggplot2, gestión iterativa de figuras con sustento numérico,
+    comunicación programática con LLMs vía ellmer y ensamblaje reproducible en Quarto.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    dplyr,
+    ggplot2,
+    ggspatial,
+    jsonlite,
+    readr,
+    readxl,
+    sf,
+    terra,
+    tools
+Suggests: 
+    bslib,
+    callr,
+    ellmer,
+    knitr,
+    rmarkdown,
+    shiny,
+    testthat (>= 3.0.0)
+URL: https://github.com/ricardoochoasosa/mapagen
+BugReports: https://github.com/ricardoochoasosa/mapagen/issues

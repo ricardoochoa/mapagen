@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.DS_Store
+inst/doc
+output/figures/*.png
+output/figures/*.pdf
+.DS_Store
+.AppleDouble
+.LSOverride

@@ -1,0 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^datamix\.r$
+^tests/testthat/_snaps$
+^\.system_generated$

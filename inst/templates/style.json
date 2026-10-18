@@ -1,0 +1,66 @@
+{
+  "project_metadata": {
+    "title": "Proyecto de Análisis Geoespacial",
+    "language": "es",
+    "locale": "es_MX.UTF-8",
+    "organization": "Laboratorio de Análisis Territorial",
+    "citation_default": "Elaboración propia con base en datos oficiales"
+  },
+  "cartography": {
+    "preferred_crs": {
+      "projected": "EPSG:6362",
+      "projected_name": "Mexico ITRF2008 / LCC",
+      "geographic": "EPSG:4326"
+    },
+    "north_arrow": {
+      "enabled": true,
+      "style": "north_arrow_minimal",
+      "location": "tl",
+      "pad_x": 0.5,
+      "pad_y": 0.5,
+      "pad_unit": "cm",
+      "text_size": 8
+    },
+    "scale_bar": {
+      "enabled": true,
+      "location": "bl",
+      "width_hint": 0.25,
+      "unit_category": "metric",
+      "style": "ticks",
+      "text_size": 7
+    }
+  },
+  "typography": {
+    "family_title": "Helvetica",
+    "family_body": "Helvetica",
+    "base_size": 11,
+    "sizes": {
+      "plot_title": 14,
+      "plot_subtitle": 11,
+      "axis_title": 10,
+      "axis_text": 9,
+      "caption": 8
+    }
+  },
+  "colors": {
+    "background": "#FFFFFF",
+    "panel_background": "#F8F9FA",
+    "grid_color": "#E9ECEF",
+    "text_main": "#212529",
+    "text_muted": "#6C757D",
+    "na_color": "#D6D6D6",
+    "border_color": "#495057",
+    "palettes": {
+      "primary": ["#1D3557", "#457B9D", "#A8DADC", "#F1FAEE", "#E63946"],
+      "categorical": ["#2A9D8F", "#E76F51", "#F4A261", "#E9C46A", "#264653"],
+      "diverging": ["#2B83BA", "#ABD9E9", "#FFFFBF", "#FDAE61", "#D7191C"],
+      "sequential": ["#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#08306B"]
+    }
+  },
+  "export": {
+    "dpi": 300,
+    "width": 8,
+    "height": 6,
+    "units": "in"
+  }
+}
