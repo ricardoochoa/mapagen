@@ -1,4 +1,6 @@
-# mapagen <img src="man/figures/mapagen_logo.svg" align="right" height="140" alt="mapagen logo" />
+<img src="man/figures/mapagen_logo.svg" align="right" height="140" alt="mapagen logo" />
+
+# mapagen 
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
