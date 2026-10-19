@@ -10,3 +10,5 @@ output/figures/*.pdf
 .DS_Store
 .AppleDouble
 .LSOverride
+/doc/
+/Meta/

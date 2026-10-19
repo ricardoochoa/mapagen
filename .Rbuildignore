@@ -3,3 +3,5 @@
 ^datamix\.r$
 ^tests/testthat/_snaps$
 ^\.system_generated$
+^doc$
+^Meta$

@@ -1,4 +1,4 @@
-<img src="man/figures/mapagen_logo.svg" align="right" height="140" alt="mapagen logo" />
+<img src="man/figures/mapagen_logo.svg" align="right" height="70" alt="mapagen logo" />
 
 # mapagen 
 

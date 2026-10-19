@@ -36,3 +36,4 @@ Suggests:
     testthat (>= 3.0.0)
 URL: https://github.com/ricardoochoasosa/mapagen
 BugReports: https://github.com/ricardoochoasosa/mapagen/issues
+VignetteBuilder: knitr
