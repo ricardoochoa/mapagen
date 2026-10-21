@@ -8,7 +8,10 @@ run_geo_agent(
   project_dir = ".",
   port = NULL,
   host = "127.0.0.1",
-  launch.browser = TRUE
+  launch.browser = TRUE,
+  provider = "gemini",
+  model = NULL,
+  max_retries = 2
 )
 }
 \arguments{
@@ -18,15 +21,21 @@ run_geo_agent(
 
 \item{host}{Direccion IP de escucha (por defecto \code{"127.0.0.1"}).}
 
-\item{launch.browser}{Lógico. Si es \code{TRUE}, abre el navegador del sistema automaticamente.}
+\item{launch.browser}{Logico. Si es \code{TRUE}, abre el navegador del sistema automaticamente.}
+
+\item{provider}{Proveedor de LLM a utilizar (\code{"gemini"}, \code{"claude"}, \code{"openai"}, \code{"ollama"}). Por defecto \code{"gemini"}.}
+
+\item{model}{Nombre de modelo especifico opcional.}
+
+\item{max_retries}{Numero maximo de intentos de autorreparacion por ejecucion (por defecto 2).}
 }
 \value{
 Inicia el servidor reactivo de Shiny (bloqueante hasta cerrar).
 }
 \description{
-Despliega una interfaz web local Shiny con diseno moderno (\code{bslib}),
-implementando el flujo de trabajo de 3 fases: interpretacion/planificacion,
-ejecucion segura en segundo plano con \code{callr} y ejeccion de scripts a RStudio.
+Despliega una interfaz web local Shiny con diseno moderno (\code{bslib}) y conversacional
+(\code{shinychat}), conectada a un agente LLM (\code{ellmer}) y un bucle de ejecucion segura
+y autorreparacion (self-healing) con \code{callr}.
 }
 \examples{
 \dontrun{

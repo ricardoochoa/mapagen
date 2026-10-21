@@ -15,7 +15,7 @@ build_context(
 
 \item{output_file}{Ruta del archivo JSON consolidado de salida. Por defecto \code{"context_metadata.json"}.}
 
-\item{include_non_supported}{Lógico. Si es \code{TRUE}, guarda un archivo adicional con extensiones no procesadas.}
+\item{include_non_supported}{Logico. Si es \code{TRUE}, guarda un archivo adicional con extensiones no procesadas.}
 }
 \value{
 Lista invisible con el contenido consolidado del catalogo.

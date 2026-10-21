@@ -17,22 +17,25 @@ RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.1.0)
 Imports: 
+    bslib,
+    callr,
     dplyr,
+    ellmer,
     ggplot2,
     ggspatial,
     jsonlite,
+    promises,
     readr,
     readxl,
     sf,
+    shiny,
+    shinychat,
     terra,
     tools
 Suggests: 
-    bslib,
-    callr,
-    ellmer,
     knitr,
     rmarkdown,
-    shiny,
+    rstudioapi,
     testthat (>= 3.0.0)
 URL: https://github.com/ricardoochoasosa/mapagen
 BugReports: https://github.com/ricardoochoasosa/mapagen/issues

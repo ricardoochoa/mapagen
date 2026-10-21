@@ -25,7 +25,7 @@ extract_column_schema <- function(df) {
       column = col_name,
       type = paste(class(col_data), collapse = ", "),
       na_percentage = round(sum(is.na(col_data)) / max(length(col_data), 1) * 100, 2),
-      sample_values = as.character(head(unique(stats::na.omit(col_data)), 3))
+      sample_values = as.character(utils::head(unique(stats::na.omit(col_data)), 3))
     )
   })
 }
@@ -180,7 +180,7 @@ scan_text <- function(file_path, max_chars = 5000) {
 #'
 #' @param dir_path Ruta al directorio a escanear. Por defecto `"data"`.
 #' @param output_file Ruta del archivo JSON consolidado de salida. Por defecto `"context_metadata.json"`.
-#' @param include_non_supported Lógico. Si es `TRUE`, guarda un archivo adicional con extensiones no procesadas.
+#' @param include_non_supported Logico. Si es `TRUE`, guarda un archivo adicional con extensiones no procesadas.
 #'
 #' @return Lista invisible con el contenido consolidado del catalogo.
 #' @export
@@ -283,7 +283,7 @@ summary_context <- function(context_obj_or_path = "context_metadata.json") {
   files <- ctx$files %||% list()
   if (length(files) == 0) return("El catalogo de datos esta vacio.")
 
-  lines <- c("### Catálogo de Datos Disponibles en el Proyecto:\n")
+  lines <- c("### Catalogo de Datos Disponibles en el Proyecto:\n")
 
   for (f in files) {
     tipo <- f$type %||% "desconocido"
@@ -297,7 +297,7 @@ summary_context <- function(context_obj_or_path = "context_metadata.json") {
         units_info <- l$spatial_metadata$units %||% ""
         geom_type <- paste(l$spatial_metadata$geometry_type %||% "Geometria", collapse = ", ")
         cols <- sapply(l$attributes_schema %||% list(), function(c) c$column)
-        cols_preview <- paste(head(cols, 8), collapse = ", ")
+        cols_preview <- paste(utils::head(cols, 8), collapse = ", ")
         if (length(cols) > 8) cols_preview <- paste0(cols_preview, "...")
 
         lines <- c(lines, sprintf("  * Capa: `%s` | Geometria: %s | CRS: %s (%s) | Columnas: [%s]",
@@ -310,7 +310,7 @@ summary_context <- function(context_obj_or_path = "context_metadata.json") {
                                 fname, fpath, sm$crs %||% "Desconocido", dim_str, paste(f$band_names %||% list(), collapse = ", ")))
     } else if (tipo == "tabular") {
       cols <- sapply(f$attributes_schema %||% list(), function(c) c$column)
-      cols_preview <- paste(head(cols, 10), collapse = ", ")
+      cols_preview <- paste(utils::head(cols, 10), collapse = ", ")
       if (length(cols) > 10) cols_preview <- paste0(cols_preview, "...")
       lines <- c(lines, sprintf("- **Tabular (%s):** `%s` | Columnas: [%s]", fname, fpath, cols_preview))
     }

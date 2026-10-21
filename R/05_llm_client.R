@@ -46,7 +46,8 @@ get_llm_system_context <- function(concept_path = "project_concept.md",
     "1. LENGUAJE Y CODIGO: Escribe explicaciones en idioma '", lang, "'. Todo codigo R debe ser limpio, moderno y reproducible.\n",
     "2. SISTEMAS DE COORDENADAS (CRS): El CRS proyectado preferido para calculos metricos (areas, buffers, distancias) es '", pref_crs, "'. NUNCA realices calculos metricos directamente sobre capas en coordenadas geograficas no proyectadas (EPSG:4326); reproyectalas primero usando `sf::st_transform(x, '", pref_crs, "')`.\n",
     "3. ESTILO VISUAL: En todos los graficos ggplot2, debes invocar siempre `mapagen::theme_from_json()` y las decoraciones cartograficas con `mapagen::add_cartographic_decorations()`.\n",
-    "4. EXPORTACION Y TRAZABILIDAD: Para guardar graficos, usa siempre `mapagen::export_iteration(plot, id = '...', caption = '...', summary_data = ...)`, asegurando pasar una tabla resumen de metricas a `summary_data`.\n\n",
+    "4. EXPORTACION Y TRAZABILIDAD: Para guardar graficos, usa siempre `mapagen::export_iteration(plot, id = '...', caption = '...', summary_data = ...)`, asegurando pasar una tabla resumen de metricas a `summary_data`.\n",
+    "5. FORMATO DE CODIGO: Cuando generes, modifiques o corrijas un mapa o analisis, proporciona siempre el bloque de codigo R ejecutable completo dentro de un unico bloque ```r ... ``` para que el motor interactivo pueda procesarlo y renderizarlo. No uses pseudocodigo ni dejes lineas incompletas.\n\n",
     "## CONTEXTO Y OBJETIVOS DEL PROYECTO:\n", concept_txt, "\n\n",
     "## CATALOGO DE DATOS DISPONIBLES:\n", catalog_summary
   )

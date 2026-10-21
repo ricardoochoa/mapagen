@@ -62,6 +62,9 @@ ask_code <- function(prompt, chat = NULL, provider = "gemini", ...) {
 }
 
 #' Imprime de forma legible la respuesta de ask_code
+#' @param x Objeto de clase `mapagen_code_response`.
+#' @param ... Argumentos adicionales pasados a `print`.
+#' @return Retorna el objeto `x` de forma invisible.
 #' @export
 print.mapagen_code_response <- function(x, ...) {
   cat(x$response)

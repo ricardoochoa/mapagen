@@ -6,6 +6,14 @@
 \usage{
 \method{print}{mapagen_code_response}(x, ...)
 }
+\arguments{
+\item{x}{Objeto de clase \code{mapagen_code_response}.}
+
+\item{...}{Argumentos adicionales pasados a \code{print}.}
+}
+\value{
+Retorna el objeto \code{x} de forma invisible.
+}
 \description{
 Imprime de forma legible la respuesta de ask_code
 }

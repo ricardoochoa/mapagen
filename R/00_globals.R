@@ -17,10 +17,10 @@
 get_template_path <- function(template_name) {
   p <- system.file("templates", template_name, package = "mapagen")
   if (p == "" || !file.exists(p)) {
-    # Fallback para desarrollo cuando no está instalado como paquete
+    # Fallback para desarrollo cuando no esta instalado como paquete
     dev_p <- file.path("inst", "templates", template_name)
     if (file.exists(dev_p)) return(normalizePath(dev_p))
-    stop(sprintf("No se encontró la plantilla '%s' en el paquete mapagen.", template_name), call. = FALSE)
+    stop(sprintf("No se encontro la plantilla '%s' en el paquete mapagen.", template_name), call. = FALSE)
   }
   normalizePath(p)
 }

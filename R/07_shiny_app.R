@@ -1,13 +1,16 @@
 #' Inicia la aplicacion interactiva de exploracion y copiloto geoespacial
 #'
-#' Despliega una interfaz web local Shiny con diseno moderno (`bslib`),
-#' implementando el flujo de trabajo de 3 fases: interpretacion/planificacion,
-#' ejecucion segura en segundo plano con `callr` y ejeccion de scripts a RStudio.
+#' Despliega una interfaz web local Shiny con diseno moderno (`bslib`) y conversacional
+#' (`shinychat`), conectada a un agente LLM (`ellmer`) y un bucle de ejecucion segura
+#' y autorreparacion (self-healing) con `callr`.
 #'
 #' @param project_dir Directorio raiz del proyecto. Por defecto el actual `"."`.
 #' @param port Puerto TCP opcional para servir la app.
 #' @param host Direccion IP de escucha (por defecto `"127.0.0.1"`).
-#' @param launch.browser Lógico. Si es `TRUE`, abre el navegador del sistema automaticamente.
+#' @param launch.browser Logico. Si es `TRUE`, abre el navegador del sistema automaticamente.
+#' @param provider Proveedor de LLM a utilizar (`"gemini"`, `"claude"`, `"openai"`, `"ollama"`). Por defecto `"gemini"`.
+#' @param model Nombre de modelo especifico opcional.
+#' @param max_retries Numero maximo de intentos de autorreparacion por ejecucion (por defecto 2).
 #'
 #' @return Inicia el servidor reactivo de Shiny (bloqueante hasta cerrar).
 #' @export
@@ -19,94 +22,133 @@
 run_geo_agent <- function(project_dir = ".",
                           port = NULL,
                           host = "127.0.0.1",
-                          launch.browser = TRUE) {
-  if (!requireNamespace("shiny", quietly = TRUE) || !requireNamespace("bslib", quietly = TRUE)) {
-    stop("Los paquetes 'shiny' y 'bslib' son necesarios para ejecutar el asistente interactivo.", call. = FALSE)
+                          launch.browser = TRUE,
+                          provider = "gemini",
+                          model = NULL,
+                          max_retries = 2) {
+  required_pkgs <- c("shiny", "bslib", "shinychat", "ellmer", "promises", "callr")
+  missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing_pkgs) > 0) {
+    stop(
+      sprintf("Los siguientes paquetes son necesarios para ejecutar el copiloto interactivo:\n  %s\nPor favor instalalos antes de continuar.",
+              paste(missing_pkgs, collapse = ", ")),
+      call. = FALSE
+    )
+  }
+
+  if (identical(provider, "gemini") && !nzchar(Sys.getenv("GEMINI_API_KEY"))) {
+    warning("No se detecto la variable de entorno 'GEMINI_API_KEY'. Configurala en tu archivo .Renviron para habilitar la comunicacion con Gemini.", call. = FALSE)
   }
 
   proj_dir <- normalizePath(project_dir, mustWork = TRUE)
 
   # UI de la aplicacion
-  ui <- bslib::page_navbar(
+  ui <- bslib::page_sidebar(
     title = "mapagen | Copiloto Geoespacial",
     theme = bslib::bs_theme(version = 5, preset = "bootstrap"),
     sidebar = bslib::sidebar(
-      width = 400,
-      shiny::h5("Asistente Conversacional"),
-      shiny::textAreaInput(
-        inputId = "user_prompt",
-        label = "Instruccion en Lenguaje Natural:",
-        placeholder = "Ej. Genera un mapa coropletico de marginacion por municipio aplicando la paleta institucional y calculando cuantiles...",
-        rows = 4
+      width = 460,
+      shiny::div(
+        class = "d-flex justify-content-between align-items-center mb-2",
+        shiny::h6("Chat Agentico", class = "mb-0 fw-bold"),
+        shiny::span(class = "badge bg-primary text-uppercase", provider)
       ),
-      shiny::actionButton(
-        inputId = "btn_plan",
-        label = "1. Proponer Plan de Accion",
-        class = "btn-primary w-100 mb-2"
+      shinychat::chat_ui(
+        id = "map_chat",
+        messages = "**Hola! Soy tu Copiloto Geoespacial de mapagen.**\n\nTengo cargado el contexto de tu proyecto, las reglas cartograficas y el catalogo de datos. Pideme crear mapas coropleticos, filtrar capas, ajustar paletas o calcular metricas espaciales.",
+        height = "72vh",
+        fill = TRUE
       ),
-      shiny::uiOutput("plan_box"),
-      shiny::hr(),
-      shiny::actionButton(
-        inputId = "btn_run_code",
-        label = "2. Aprobar y Generar Mapa",
-        class = "btn-success w-100 mb-2",
-        disabled = TRUE
+      shiny::hr(class = "my-2"),
+      shiny::div(
+        class = "d-flex gap-2",
+        shiny::actionButton(
+          inputId = "btn_reset_chat",
+          label = "Reiniciar Sesion",
+          icon = shiny::icon("arrow-rotate-right"),
+          class = "btn-outline-secondary btn-sm w-50"
+        ),
+        shiny::actionButton(
+          inputId = "btn_export_script",
+          label = "Eyectar a R (.R)",
+          icon = shiny::icon("file-code"),
+          class = "btn-outline-primary btn-sm w-50",
+          disabled = TRUE
+        )
+      )
+    ),
+    bslib::navset_card_tab(
+      id = "main_tabs",
+      bslib::nav_panel(
+        title = "Visualizacion",
+        shiny::div(
+          class = "p-3",
+          shiny::uiOutput("render_status"),
+          shiny::imageOutput("plot_display", height = "620px")
+        )
       ),
-      shiny::actionButton(
-        inputId = "btn_export_script",
-        label = "3. Eyectar a Script (.R)",
-        class = "btn-outline-secondary w-100",
-        disabled = TRUE
-      )
-    ),
-    bslib::nav_panel(
-      title = "Visualizacion",
-      shiny::div(
-        class = "p-3",
-        shiny::uiOutput("render_status"),
-        shiny::imageOutput("plot_display", height = "550px")
-      )
-    ),
-    bslib::nav_panel(
-      title = "Codigo R Generado",
-      shiny::div(
-        class = "p-3",
-        shiny::p("Codigo reproducible generado por el modelo para evaluacion o edicion:"),
-        shiny::verbatimTextOutput("code_display")
-      )
-    ),
-    bslib::nav_panel(
-      title = "Catalogo de Datos",
-      shiny::div(
-        class = "p-3",
-        shiny::p("Capas y tablas detectadas en 'context_metadata.json':"),
-        shiny::verbatimTextOutput("catalog_display")
-      )
-    ),
-    bslib::nav_panel(
-      title = "Auditoria de Estilo",
-      shiny::div(
-        class = "p-3",
-        shiny::actionButton("btn_audit", "Ejecutar Auditoria Visual con Gemini Vision", class = "btn-info mb-3"),
-        shiny::verbatimTextOutput("audit_display")
+      bslib::nav_panel(
+        title = "Codigo R Generado",
+        shiny::div(
+          class = "p-3",
+          shiny::p("Ultimo script ejecutable generado o reparado por el agente:"),
+          shiny::verbatimTextOutput("code_display"),
+          shiny::tags$hr(),
+          shiny::h6("Log de Ejecucion en Sandbox (callr):"),
+          shiny::verbatimTextOutput("log_display")
+        )
+      ),
+      bslib::nav_panel(
+        title = "Catalogo de Datos",
+        shiny::div(
+          class = "p-3",
+          shiny::p("Capas vectoriales, raster y tablas detectadas en 'context_metadata.json':"),
+          shiny::verbatimTextOutput("catalog_display")
+        )
+      ),
+      bslib::nav_panel(
+        title = "Auditoria de Estilo",
+        shiny::div(
+          class = "p-3",
+          shiny::actionButton("btn_audit", "Ejecutar Auditoria Visual con Gemini Vision", class = "btn-info mb-3"),
+          shiny::verbatimTextOutput("audit_display")
+        )
       )
     )
   )
 
   # Server de la aplicacion
   server <- function(input, output, session) {
+    catalog_path <- file.path(proj_dir, "context_metadata.json")
+    concept_path <- file.path(proj_dir, "project_concept.md")
+    style_path   <- file.path(proj_dir, "style.json")
+
+    # Inicializar chat con el contexto del proyecto
+    init_chat <- function() {
+      geo_chat(
+        provider = provider,
+        model = model,
+        concept_path = concept_path,
+        style_path = style_path,
+        context_path = catalog_path
+      )
+    }
+
     # Estado reactivo
     state <- shiny::reactiveValues(
-      chat = NULL,
-      current_plan = NULL,
+      chat = init_chat(),
       current_code = "",
       latest_png = NULL,
       executing = FALSE,
-      audit_result = "Presiona el boton para auditar la imagen actual contra style.json."
+      execution_log = "Sin ejecuciones previas.",
+      audit_result = "Presiona el boton para auditar la imagen actual contra style.json.",
+      status_ui = list(
+        type = "info",
+        message = "Listo para recibir instrucciones en lenguaje natural."
+      )
     )
 
-    # Cargar catalogo inicial
-    catalog_path <- file.path(proj_dir, "context_metadata.json")
+    # Cargar catalogo de datos
     output$catalog_display <- shiny::renderText({
       if (file.exists(catalog_path)) {
         summary_context(catalog_path)
@@ -115,99 +157,22 @@ run_geo_agent <- function(project_dir = ".",
       }
     })
 
-    # Fase 1: Proponer Plan
-    shiny::observeEvent(input$btn_plan, {
-      req(input$user_prompt)
-      shiny::showNotification("Consultando al agente para formular el plan...", type = "message")
-
-      tryCatch({
-        check_ellmer()
-        state$chat <- geo_chat(
-          concept_path = file.path(proj_dir, "project_concept.md"),
-          style_path = file.path(proj_dir, "style.json"),
-          context_path = catalog_path
-        )
-
-        plan_prompt <- sprintf(
-          "El usuario solicita: '%s'. Formula un PLAN DE ACCION claro y conciso en 3-4 pasos, mencionando que capas de datos usaras, que operaciones espaciales (uniones, filtros, reproyecciones) se haran y que tipo de visualizacion propones. No incluyas codigo todavia.",
-          input$user_prompt
-        )
-
-        plan_response <- state$chat$chat(plan_prompt)
-        state$current_plan <- plan_response
-
-        shiny::updateActionButton(session, "btn_run_code", disabled = FALSE)
-      }, error = function(e) {
-        shiny::showNotification(paste("Error al consultar el LLM:", e$message), type = "error")
-      })
-    })
-
-    output$plan_box <- shiny::renderUI({
-      req(state$current_plan)
-      shiny::div(
-        class = "card p-2 mt-2 bg-light border-primary",
-        shiny::h6("Plan Propuesto:"),
-        shiny::p(state$current_plan, style = "font-size: 0.88rem; white-space: pre-line;")
+    # Renderizar estado visual
+    output$render_status <- shiny::renderUI({
+      s <- state$status_ui
+      color_class <- switch(s$type,
+        success = "alert alert-success py-2 px-3 mb-3",
+        error   = "alert alert-danger py-2 px-3 mb-3",
+        warning = "alert alert-warning py-2 px-3 mb-3",
+        info    = "alert alert-info py-2 px-3 mb-3",
+        "alert alert-secondary py-2 px-3 mb-3"
       )
+      shiny::div(class = color_class, shiny::HTML(s$message))
     })
 
-    # Fase 2: Aprobar, Generar y Ejecutar
-    shiny::observeEvent(input$btn_run_code, {
-      req(state$chat)
-      shiny::showNotification("Traduciendo plan a codigo R y renderizando...", type = "message")
-
-      tryCatch({
-        code_prompt <- "Excelente. Ahora traduce el plan acordado a codigo R ejecutable estricto. Aplica mapagen::theme_from_json() y exporta la figura usando mapagen::export_iteration(p, id = 'mapa_shiny', caption = '...', summary_data = ...). Entrega el bloque ```r completo."
-        code_res <- state$chat$chat(code_prompt)
-        r_code <- extract_r_code(code_res)
-        state$current_code <- r_code
-
-        output$code_display <- shiny::renderText({ r_code })
-
-        # Ejecucion segura en proceso aislado con callr
-        if (requireNamespace("callr", quietly = TRUE)) {
-          temp_script <- file.path(proj_dir, "scripts", "temp_agent_exec.R")
-          dir.create(dirname(temp_script), recursive = TRUE, showWarnings = FALSE)
-          writeLines(r_code, temp_script)
-
-          output$render_status <- shiny::renderUI({
-            shiny::p("Ejecutando script de forma segura en proceso aislado...", class = "text-primary")
-          })
-
-          res <- callr::r_safe(
-            function(script_path, wd) {
-              setwd(wd)
-              source(script_path, local = FALSE)
-            },
-            args = list(script_path = temp_script, wd = proj_dir),
-            timeout = 60,
-            show = FALSE
-          )
-
-          # Buscar la imagen mas reciente en output/figures
-          figs <- list.files(file.path(proj_dir, "output", "figures"), pattern = "\\.png$", full.names = TRUE)
-          if (length(figs) > 0) {
-            info <- file.info(figs)
-            latest <- figs[which.max(info$mtime)]
-            state$latest_png <- latest
-            output$render_status <- shiny::renderUI({
-              shiny::p(paste("Renderizado exitoso:", basename(latest)), class = "text-success fw-bold")
-            })
-          }
-        }
-
-        shiny::updateActionButton(session, "btn_export_script", disabled = FALSE)
-      }, error = function(e) {
-        output$render_status <- shiny::renderUI({
-          shiny::p(paste("Error durante la ejecucion:", e$message), class = "text-danger fw-bold")
-        })
-        shiny::showNotification(paste("Error al ejecutar:", e$message), type = "error")
-      })
-    })
-
-    # Mostrar imagen renderizada
+    # Renderizar imagen de la figura actual
     output$plot_display <- shiny::renderImage({
-      req(state$latest_png)
+      shiny::req(state$latest_png)
       list(
         src = state$latest_png,
         contentType = "image/png",
@@ -216,9 +181,104 @@ run_geo_agent <- function(project_dir = ".",
       )
     }, deleteFile = FALSE)
 
-    # Fase 3: Ejeccion a RStudio
+    # Observar entradas del chat de shinychat
+    shiny::observeEvent(input$map_chat_user_input, {
+      prompt <- input$map_chat_user_input
+      shiny::req(is.character(prompt) && nzchar(trimws(prompt)))
+
+      if (isTRUE(state$executing)) {
+        shiny::showNotification("El agente ya esta procesando una consulta. Por favor espera a que termine.", type = "warning")
+        return()
+      }
+
+      state$executing <- TRUE
+      state$status_ui <- list(type = "info", message = "Generando respuesta del agente...")
+
+      # Streaming asincrono hacia shinychat
+      stream <- state$chat$stream_async(prompt)
+      p <- shinychat::chat_append("map_chat", stream)
+
+      promises::then(
+        p,
+        onFulfilled = function(full_text) {
+          r_code <- extract_r_code(full_text)
+
+          # Si no hay bloque de codigo R, es un dialogo puramente analitico/explicativo
+          if (!nzchar(r_code)) {
+            state$executing <- FALSE
+            state$status_ui <- list(type = "info", message = "Respuesta analitica entregada.")
+            return()
+          }
+
+          state$status_ui <- list(type = "warning", message = "Ejecutando script geoespacial en sandbox aislado...")
+          state$current_code <- r_code
+          output$code_display <- shiny::renderText({ r_code })
+
+          # Ejecucion aislada con bucle autonomo de autorreparacion (Self-Healing)
+          exec_res <- run_with_self_healing(
+            chat = state$chat,
+            code = r_code,
+            proj_dir = proj_dir,
+            max_retries = max_retries,
+            on_retry = function(attempt, err) {
+              shinychat::chat_append(
+                "map_chat",
+                sprintf("[AVISO] Fallo en ejecucion: `%s`\n\nIniciando autorreparacion con Gemini (Intento %d/%d)...", err, attempt, max_retries)
+              )
+              state$status_ui <- list(
+                type = "warning",
+                message = sprintf("Error detectado. Autorreparando con Gemini (Intento %d/%d)...", attempt, max_retries)
+              )
+            },
+            on_code_generated = function(new_code, full_resp) {
+              shinychat::chat_append("map_chat", full_resp)
+              state$current_code <- new_code
+              output$code_display <- shiny::renderText({ new_code })
+            }
+          )
+
+          state$executing <- FALSE
+          state$current_code <- exec_res$code
+          state$execution_log <- if (is.null(exec_res$log)) "Sin mensajes de consola." else paste(exec_res$log, collapse = "\n")
+          output$code_display <- shiny::renderText({ exec_res$code })
+          output$log_display <- shiny::renderText({ state$execution_log })
+
+          if (isTRUE(exec_res$success)) {
+            state$latest_png <- exec_res$image_path
+            state$status_ui <- list(
+              type = "success",
+              message = sprintf("<b>Renderizado exitoso</b> (intentos: %d): %s", exec_res$attempts, basename(exec_res$image_path %||% "figura"))
+            )
+            shiny::updateActionButton(session, "btn_export_script", disabled = FALSE)
+          } else {
+            state$status_ui <- list(
+              type = "error",
+              message = sprintf("<b>Error no recuperable</b> tras %d intentos: %s", exec_res$attempts, exec_res$error)
+            )
+            shinychat::chat_append(
+              "map_chat",
+              sprintf("[ERROR] Error no recuperable tras autorreparacion: `%s`\n\nPuedes revisar el codigo y la traza en la pestana 'Codigo R Generado' o guiar al agente con una nueva instruccion.", exec_res$error)
+            )
+          }
+        },
+        onRejected = function(err) {
+          state$executing <- FALSE
+          state$status_ui <- list(type = "error", message = paste("Error en la comunicacion con el LLM:", err$message))
+          shiny::showNotification(paste("Error en LLM:", err$message), type = "error")
+        }
+      )
+    })
+
+    # Reiniciar sesion de chat
+    shiny::observeEvent(input$btn_reset_chat, {
+      state$chat <- init_chat()
+      shinychat::chat_append("map_chat", "[SESION REINICIADA] El historial previo se ha limpiado y el contexto se ha recargado.")
+      shiny::showNotification("Sesion de chat reiniciada.", type = "message")
+    })
+
+    # Eyectar script a RStudio
     shiny::observeEvent(input$btn_export_script, {
-      req(state$current_code)
+      shiny::req(state$current_code)
       timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
       script_file <- file.path(proj_dir, "scripts", paste0("analisis_", timestamp, ".R"))
       dir.create(dirname(script_file), recursive = TRUE, showWarnings = FALSE)
@@ -231,9 +291,9 @@ run_geo_agent <- function(project_dir = ".",
       }
     })
 
-    # Auditoria visual
+    # Auditoria visual con Gemini Vision
     shiny::observeEvent(input$btn_audit, {
-      req(state$latest_png)
+      shiny::req(state$latest_png)
       shiny::showNotification("Ejecutando auditoria con Gemini Vision...", type = "message")
       tryCatch({
         audit_res <- audit_figure(
