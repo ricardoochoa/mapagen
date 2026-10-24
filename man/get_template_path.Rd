@@ -2,17 +2,17 @@
 % Please edit documentation in R/00_globals.R
 \name{get_template_path}
 \alias{get_template_path}
-\title{Obtiene la ruta a una plantilla interna del paquete}
+\title{Retrieve the path to an internal package template}
 \usage{
 get_template_path(template_name)
 }
 \arguments{
-\item{template_name}{Nombre del archivo de plantilla dentro de inst/templates}
+\item{template_name}{Name of the template file in inst/templates.}
 }
 \value{
-Ruta absoluta al archivo de plantilla
+Absolute path to the template file.
 }
 \description{
-Obtiene la ruta a una plantilla interna del paquete
+Retrieve the path to an internal package template
 }
 \keyword{internal}

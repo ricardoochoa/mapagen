@@ -1,19 +1,19 @@
-#' Inicializa un proyecto agéntico de análisis geoespacial
+#' Initialize an agentic geospatial analysis project
 #'
-#' Crea la estructura de directorios estandarizada, archivos de configuración
-#' de estilos (`style.json`), objetivos del proyecto (`project_concept.md`),
-#' registro de figuras y plantillas de reporte en Quarto.
+#' Creates a standardized directory structure, style configuration files
+#' (`style.json`), project objectives (`project_concept.md`), figure
+#' registry, and Quarto report templates.
 #'
-#' @param path Directorio raíz donde se inicializará el proyecto. Por defecto el directorio actual `"."`.
-#' @param name Nombre opcional del proyecto. Si no se provee, se usa el nombre del directorio.
-#' @param overwrite Lógico. Si es `TRUE`, sobrescribe los archivos de configuración existentes.
+#' @param path Root directory where the project will be initialized. Defaults to current directory `"."`.
+#' @param name Optional project name. If not provided, directory name is used.
+#' @param overwrite Logical. If `TRUE`, overwrites existing configuration files.
 #'
-#' @return Lista invisible con las rutas creadas.
+#' @return Invisible list containing the created file and directory paths.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' init_agent_project("mi_analisis_territorial")
+#' init_agent_project("my_spatial_project")
 #' }
 init_agent_project <- function(path = ".", name = NULL, overwrite = FALSE) {
   target_dir <- normalizePath(path, mustWork = FALSE)
@@ -23,7 +23,7 @@ init_agent_project <- function(path = ".", name = NULL, overwrite = FALSE) {
 
   proj_name <- name %||% basename(target_dir)
 
-  message(sprintf("Inicializando proyecto mapagen '%s' en: %s", proj_name, target_dir))
+  message(sprintf("Initializing mapagen project '%s' at: %s", proj_name, target_dir))
 
   # 1. Crear estructura de carpetas
   subdirs <- c(
@@ -45,12 +45,12 @@ init_agent_project <- function(path = ".", name = NULL, overwrite = FALSE) {
   copy_template <- function(template_name, dest_name = template_name) {
     dest_path <- file.path(target_dir, dest_name)
     if (file.exists(dest_path) && !overwrite) {
-      message(sprintf("  - [Omitido] Ya existe: %s", dest_name))
+      message(sprintf("  - [Skipped] Already exists: %s", dest_name))
       return(dest_path)
     }
     src_path <- get_template_path(template_name)
     file.copy(src_path, dest_path, overwrite = overwrite)
-    message(sprintf("  + [Creado] %s", dest_name))
+    message(sprintf("  + [Created] %s", dest_name))
     dest_path
   }
 
@@ -64,21 +64,21 @@ init_agent_project <- function(path = ".", name = NULL, overwrite = FALSE) {
   registry_path <- file.path(target_dir, "output", "figures_registry.json")
   if (!file.exists(registry_path) || overwrite) {
     write_json_safe(list(), registry_path)
-    message("  + [Creado] output/figures_registry.json")
+    message("  + [Created] output/figures_registry.json")
   }
 
   # 4. Crear archivo .gitignore inicial si no existe
   gitignore_path <- file.path(target_dir, ".gitignore")
   if (!file.exists(gitignore_path)) {
     writeLines(c(".Rproj.user", ".Rhistory", ".RData", ".DS_Store", "output/figures/*.png", "output/figures/*.pdf"), gitignore_path)
-    message("  + [Creado] .gitignore")
+    message("  + [Created] .gitignore")
   }
 
-  message("\n Proyecto inicializado exitosamente.")
-  message("Siguiente paso sugerido:")
-  message("  1. Coloca tus capas y archivos fuente en 'data/raw/'")
-  message("  2. Ajusta tus preferencias en 'style.json' y 'project_concept.md'")
-  message("  3. Ejecuta mapagen::build_context() para generar el catalogo de datos.")
+  message("\nProject initialized successfully.")
+  message("Suggested next steps:")
+  message("  1. Place your spatial layers and raw files in 'data/raw/'")
+  message("  2. Adjust your settings in 'style.json' and 'project_concept.md'")
+  message("  3. Run mapagen::build_context() to generate the data catalog.")
 
   invisible(list(
     project_dir = target_dir,

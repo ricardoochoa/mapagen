@@ -2,18 +2,18 @@
 % Please edit documentation in R/03_context.R
 \name{scan_tabular}
 \alias{scan_tabular}
-\title{Escanea archivos tabulares}
+\title{Scan tabular files or data frame objects}
 \usage{
-scan_tabular(file_path, ext = tools::file_ext(file_path))
+scan_tabular(x, ext = if (is.character(x)) tools::file_ext(x) else "")
 }
 \arguments{
-\item{file_path}{Ruta al archivo (.csv, .xlsx, .xls).}
+\item{x}{Path to a tabular file (.csv, .xlsx, .xls) or in-memory data.frame/tibble.}
 
-\item{ext}{Extension del archivo en minusculas.}
+\item{ext}{File extension in lowercase (when x is a file path).}
 }
 \value{
-Lista con el esquema de columnas.
+List containing column schemas and row samples.
 }
 \description{
-Escanea archivos tabulares
+Scan tabular files or data frame objects
 }

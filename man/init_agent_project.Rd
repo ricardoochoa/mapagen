@@ -2,27 +2,27 @@
 % Please edit documentation in R/01_scaffold.R
 \name{init_agent_project}
 \alias{init_agent_project}
-\title{Inicializa un proyecto agéntico de análisis geoespacial}
+\title{Initialize an agentic geospatial analysis project}
 \usage{
 init_agent_project(path = ".", name = NULL, overwrite = FALSE)
 }
 \arguments{
-\item{path}{Directorio raíz donde se inicializará el proyecto. Por defecto el directorio actual \code{"."}.}
+\item{path}{Root directory where the project will be initialized. Defaults to current directory \code{"."}.}
 
-\item{name}{Nombre opcional del proyecto. Si no se provee, se usa el nombre del directorio.}
+\item{name}{Optional project name. If not provided, directory name is used.}
 
-\item{overwrite}{Lógico. Si es \code{TRUE}, sobrescribe los archivos de configuración existentes.}
+\item{overwrite}{Logical. If \code{TRUE}, overwrites existing configuration files.}
 }
 \value{
-Lista invisible con las rutas creadas.
+Invisible list containing the created file and directory paths.
 }
 \description{
-Crea la estructura de directorios estandarizada, archivos de configuración
-de estilos (\code{style.json}), objetivos del proyecto (\code{project_concept.md}),
-registro de figuras y plantillas de reporte en Quarto.
+Creates a standardized directory structure, style configuration files
+(\code{style.json}), project objectives (\code{project_concept.md}), figure
+registry, and Quarto report templates.
 }
 \examples{
 \dontrun{
-init_agent_project("mi_analisis_territorial")
+init_agent_project("my_spatial_project")
 }
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_figures.R
 \name{get_figure_entry}
 \alias{get_figure_entry}
-\title{Obtiene los metadatos de la version mas reciente (o especifica) de una figura}
+\title{Retrieve metadata for a specific figure version}
 \usage{
 get_figure_entry(
   id,
@@ -11,15 +11,15 @@ get_figure_entry(
 )
 }
 \arguments{
-\item{id}{Identificador unico de la figura (ej. \code{"fig_001"}).}
+\item{id}{Unique identifier of the figure (e.g. \code{"fig_001"}).}
 
-\item{version}{Numero de version o \code{"latest"}.}
+\item{version}{Version number or \code{"latest"}.}
 
-\item{registry_path}{Ruta al archivo \code{figures_registry.json}.}
+\item{registry_path}{Path to \code{figures_registry.json}.}
 }
 \value{
-Lista con los metadatos de la figura encontrada, o \code{NULL} si no existe.
+List with figure metadata, or \code{NULL} if not found.
 }
 \description{
-Obtiene los metadatos de la version mas reciente (o especifica) de una figura
+Retrieve metadata for a specific figure version
 }

@@ -2,16 +2,22 @@
 % Please edit documentation in R/03_context.R
 \name{summary_context}
 \alias{summary_context}
-\title{Genera una sintesis concisa del catalogo para inyectar en prompts LLM}
+\title{Generate concise data catalog summary}
 \usage{
-summary_context(context_obj_or_path = "context_metadata.json")
+summary_context(
+  context_obj_or_path = "context_metadata.json",
+  format = c("markdown", "list", "json")
+)
 }
 \arguments{
-\item{context_obj_or_path}{Objeto devuelto por \code{build_context()} o ruta a \code{context_metadata.json}.}
+\item{context_obj_or_path}{Object returned by \code{build_context()} or path to \code{context_metadata.json}.}
+
+\item{format}{Output format: \code{"markdown"}, \code{"list"}, or \code{"json"}.}
 }
 \value{
-Cadena de texto en formato Markdown lista para incluir en prompts.
+According to \code{format}, Markdown string, structured list, or JSON string.
 }
 \description{
-Genera una sintesis concisa del catalogo para inyectar en prompts LLM
+Formats metadata from the project's data catalog into a structured list,
+pure JSON, or concise Markdown text.
 }

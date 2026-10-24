@@ -2,16 +2,17 @@
 % Please edit documentation in R/03_context.R
 \name{scan_raster}
 \alias{scan_raster}
-\title{Escanea y extrae metadatos de archivos raster}
+\title{Scan and extract metadata from raster files or objects}
 \usage{
-scan_raster(file_path)
+scan_raster(x)
 }
 \arguments{
-\item{file_path}{Ruta al archivo raster (.tif, .asc, etc.).}
+\item{x}{Path to a raster file (.tif, .asc, etc.) or a \code{SpatRaster} object.}
 }
 \value{
-Lista con resolucion, extension, bandas y CRS.
+List with resolution, dimensions, extent, bands, nodata, and CRS.
 }
 \description{
-Lee unicamente punteros de memoria con \code{terra} sin cargar el raster a RAM.
+Inspects spatial raster headers using \code{terra} without loading full data into RAM.
+Supports file paths or in-memory \code{SpatRaster} objects.
 }

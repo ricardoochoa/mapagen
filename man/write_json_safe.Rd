@@ -2,16 +2,19 @@
 % Please edit documentation in R/00_globals.R
 \name{write_json_safe}
 \alias{write_json_safe}
-\title{Escribe un archivo JSON formateado de forma segura}
+\title{Safely write a formatted JSON file using jsonlite}
 \usage{
 write_json_safe(obj, path)
 }
 \arguments{
-\item{obj}{Objeto R para serializar}
+\item{obj}{R object to serialize.}
 
-\item{path}{Ruta de salida}
+\item{path}{Output path.}
+}
+\value{
+The output path invisibly.
 }
 \description{
-Escribe un archivo JSON formateado de forma segura
+Safely write a formatted JSON file using jsonlite
 }
 \keyword{internal}

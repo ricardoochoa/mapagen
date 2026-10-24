@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_figures.R
 \name{include_figure}
 \alias{include_figure}
-\title{Helper para incluir dinamicamente figuras registradas en reportes Quarto (.qmd)}
+\title{Helper to dynamically embed registered figures in Quarto reports (.qmd)}
 \usage{
 include_figure(
   id,
@@ -13,20 +13,20 @@ include_figure(
 )
 }
 \arguments{
-\item{id}{Identificador unico de la figura registrada (ej. \code{"fig_001"}).}
+\item{id}{Unique figure identifier (e.g. \code{"fig_001"}).}
 
-\item{version}{Version a incluir (\code{"latest"} por defecto, o un numero entero).}
+\item{version}{Version to embed (\code{"latest"} by default, or an integer).}
 
-\item{width}{Ancho en formato HTML/CSS (ej. \code{"100\%"} o \code{"650px"}).}
+\item{width}{Width in HTML/CSS format (e.g. \code{"100\%"} or \code{"650px"}).}
 
-\item{registry_path}{Ruta a \code{figures_registry.json}.}
+\item{registry_path}{Path to \code{figures_registry.json}.}
 
-\item{style_path}{Ruta a \code{style.json} para obtener citas y configuraciones de idioma.}
+\item{style_path}{Path to \code{style.json}.}
 }
 \value{
-Imprime y devuelve codigo Markdown formateado para ser interpretado con \code{results: asis}.
+Prints and returns formatted Markdown code for \code{results: asis} chunks.
 }
 \description{
-Lee los metadatos desde \code{figures_registry.json}, formatea la ruta de la imagen,
-el pie de figura (\code{caption}) y la cita bibliografica institucional.
+Reads metadata from \code{figures_registry.json}, formatting the image path,
+caption, and institutional citation based on \code{style.json} language preferences.
 }

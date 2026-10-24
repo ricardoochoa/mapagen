@@ -1,27 +1,27 @@
-#' Lee y valida el archivo de configuracion de estilos
+#' Read and validate style configuration file
 #'
-#' @param style_path Ruta al archivo `style.json`. Por defecto `"style.json"`.
-#' @return Lista con las reglas de estilo parseadas.
+#' @param style_path Path to the `style.json` file. Defaults to `"style.json"`.
+#' @return List with parsed style rules.
 #' @export
 read_style <- function(style_path = "style.json") {
   if (!file.exists(style_path)) {
-    # Si no se encuentra en el directorio actual, buscar en la plantilla por defecto
-    warning(sprintf("No se encontro '%s'. Usando configuracion de estilo por defecto.", style_path), call. = FALSE)
+    # If not found in current directory, fallback to default package template
+    warning(sprintf("File '%s' not found. Using default package style configuration.", style_path), call. = FALSE)
     style_path <- get_template_path("style.json")
   }
   read_json_safe(style_path)
 }
 
-#' Genera un tema de ggplot2 a partir de un archivo style.json
+#' Generate a ggplot2 theme from a style.json file
 #'
-#' Traduce las propiedades tipograficas, colores de fondo y bordes
-#' definidos en `style.json` a un objeto `theme` de `ggplot2`.
+#' Translates typographic rules, background colors, and borders defined
+#' in `style.json` into a `ggplot2` `theme` object.
 #'
-#' @param style_path Ruta al archivo `style.json`.
-#' @param base_size Tamano base de fuente opcional para sobreescribir el del JSON.
-#' @param base_family Familia tipografica base opcional.
+#' @param style_path Path to the `style.json` file.
+#' @param base_size Optional base font size override.
+#' @param base_family Optional base font family override.
 #'
-#' @return Objeto de clase `theme` de `ggplot2`.
+#' @return A `ggplot2` `theme` object.
 #' @export
 #'
 #' @examples
@@ -91,16 +91,16 @@ theme_from_json <- function(style_path = "style.json", base_size = NULL, base_fa
     )
 }
 
-#' Agrega elementos cartograficos estandarizados (flecha de norte y barra de escala)
+#' Add standardized cartographic decorations (north arrow and scale bar)
 #'
-#' Lee las directrices de `style.json` y aplica las capas de `ggspatial` correspondientes.
+#' Reads guidelines from `style.json` and applies corresponding `ggspatial` layers.
 #'
-#' @param plot Objeto `ggplot` al que se anadiran los elementos. Si es `NULL`, devuelve una lista de capas lista para sumar `+`.
-#' @param style_path Ruta al archivo `style.json`.
-#' @param north Lógico. Si es `TRUE`, intenta agregar la flecha de norte si esta habilitada en el JSON.
-#' @param scale Lógico. Si es `TRUE`, intenta agregar la escala grafica si esta habilitada en el JSON.
+#' @param plot A `ggplot` object to decorate. If `NULL`, returns a list of layers ready to add with `+`.
+#' @param style_path Path to `style.json`.
+#' @param north Logical. If `TRUE`, attempts to add a north arrow if enabled in the JSON.
+#' @param scale Logical. If `TRUE`, attempts to add a scale bar if enabled in the JSON.
 #'
-#' @return Lista de componentes `ggplot2` / `ggspatial`.
+#' @return A decorated `ggplot` object or a list of `ggplot2` / `ggspatial` components.
 #' @export
 add_cartographic_decorations <- function(plot = NULL, style_path = "style.json", north = TRUE, scale = TRUE) {
   cfg <- read_style(style_path)
@@ -156,30 +156,30 @@ add_cartographic_decorations <- function(plot = NULL, style_path = "style.json",
   }
 }
 
-#' Obtiene la paleta de colores configurada en style.json
+#' Retrieve color palette configured in style.json
 #'
-#' @param name Nombre de la paleta: `"primary"`, `"categorical"`, `"diverging"`, `"sequential"`.
-#' @param style_path Ruta al archivo `style.json`.
-#' @return Vector de caracteres con codigos hexadecimales.
+#' @param name Name of the palette: `"primary"`, `"categorical"`, `"diverging"`, `"sequential"`.
+#' @param style_path Path to `style.json`.
+#' @return Character vector of hexadecimal color codes.
 #' @export
 get_palette <- function(name = "primary", style_path = "style.json") {
   cfg <- read_style(style_path)
   palettes <- cfg$colors$palettes %||% list()
   pal <- palettes[[name]]
   if (is.null(pal) || length(pal) == 0) {
-    warning(sprintf("Paleta '%s' no encontrada en style.json. Usando 'primary' por defecto.", name), call. = FALSE)
+    warning(sprintf("Palette '%s' not found in style.json. Using 'primary' by default.", name), call. = FALSE)
     pal <- palettes[["primary"]] %||% c("#1D3557", "#457B9D", "#A8DADC", "#F1FAEE", "#E63946")
   }
   unlist(pal)
 }
 
-#' Escalas de relleno de ggplot2 basadas en style.json
+#' ggplot2 fill scales based on style.json
 #'
-#' @param palette Nombre de la paleta a utilizar.
-#' @param style_path Ruta a `style.json`.
-#' @param discrete Lógico. ¿Es para variable discreta o continua?
-#' @param ... Argumentos adicionales pasados a `scale_fill_manual` o `scale_fill_gradientn`.
-#' @return Escala de `ggplot2`.
+#' @param palette Name of the palette to use.
+#' @param style_path Path to `style.json`.
+#' @param discrete Logical. Whether the scale is for discrete or continuous data.
+#' @param ... Additional arguments passed to `scale_fill_manual` or `scale_fill_gradientn`.
+#' @return A `ggplot2` scale.
 #' @export
 scale_fill_mapagen <- function(palette = "primary", style_path = "style.json", discrete = TRUE, ...) {
   cols <- get_palette(palette, style_path)
@@ -190,13 +190,13 @@ scale_fill_mapagen <- function(palette = "primary", style_path = "style.json", d
   }
 }
 
-#' Escalas de color (lineas/puntos) de ggplot2 basadas en style.json
+#' ggplot2 color scales based on style.json
 #'
-#' @param palette Nombre de la paleta a utilizar.
-#' @param style_path Ruta a `style.json`.
-#' @param discrete Lógico. ¿Es para variable discreta o continua?
-#' @param ... Argumentos adicionales pasados a `scale_color_manual` o `scale_color_gradientn`.
-#' @return Escala de `ggplot2`.
+#' @param palette Name of the palette to use.
+#' @param style_path Path to `style.json`.
+#' @param discrete Logical. Whether the scale is for discrete or continuous data.
+#' @param ... Additional arguments passed to `scale_color_manual` or `scale_color_gradientn`.
+#' @return A `ggplot2` scale.
 #' @export
 scale_color_mapagen <- function(palette = "primary", style_path = "style.json", discrete = TRUE, ...) {
   cols <- get_palette(palette, style_path)
@@ -207,11 +207,11 @@ scale_color_mapagen <- function(palette = "primary", style_path = "style.json", 
   }
 }
 
-#' Obtiene el CRS preferido configurado en style.json
+#' Retrieve preferred Coordinate Reference System (CRS) from style.json
 #'
-#' @param style_path Ruta a `style.json`.
-#' @param type Tipo de CRS: `"projected"` (metrico para calculos) o `"geographic"` (lat/lon).
-#' @return Cadena con el codigo EPSG (ej. `"EPSG:6362"`).
+#' @param style_path Path to `style.json`.
+#' @param type CRS type: `"projected"` (metric for calculations) or `"geographic"` (lat/lon).
+#' @return Character string containing the EPSG code (e.g. `"EPSG:6362"`).
 #' @export
 get_preferred_crs <- function(style_path = "style.json", type = c("projected", "geographic")) {
   type <- match.arg(type)
@@ -222,4 +222,104 @@ get_preferred_crs <- function(style_path = "style.json", type = c("projected", "
   } else {
     crs_cfg$geographic %||% "EPSG:4326"
   }
+}
+
+#' Retrieve project rules and guidelines for AI agents
+#'
+#' Extracts style configuration (`style.json`) and project concept (`project_concept.md`)
+#' to structure actionable guidelines for agents in list, JSON, or Markdown format.
+#' Respects the project language configured in `style.json`.
+#'
+#' @param style_path Path to `style.json`.
+#' @param concept_path Path to `project_concept.md`.
+#' @param format Output format: `"list"`, `"json"`, or `"markdown"`.
+#' @return Formatted list, JSON string, or Markdown text according to `format`.
+#' @export
+get_project_rules <- function(style_path = "style.json",
+                              concept_path = "project_concept.md",
+                              format = c("list", "json", "markdown")) {
+  format <- match.arg(format)
+  cfg <- read_style(style_path)
+
+  concept_txt <- if (file.exists(concept_path)) {
+    paste(readLines(concept_path, warn = FALSE), collapse = "\n")
+  } else {
+    "No project_concept.md file specified."
+  }
+
+  meta <- cfg$project_metadata %||% list()
+  lang <- meta$language %||% "es"
+  pref_proj <- get_preferred_crs(style_path, type = "projected")
+  pref_geo  <- get_preferred_crs(style_path, type = "geographic")
+
+  is_es <- tolower(lang) %in% c("es", "es_mx", "es_es")
+
+  conventions_list <- if (is_es) {
+    list(
+      metric_calculations = sprintf("Usa siempre '%s' para calculos metricos (areas, buffers, distancias).", pref_proj),
+      styling = "Aplica mapagen::theme_from_json() y mapagen::add_cartographic_decorations() en mapas ggplot2.",
+      figure_export = "Exporta con mapagen::export_iteration(plot, id = '...', caption = '...', summary_data = ...).",
+      report_inclusion = "Incluye figuras en Quarto (.qmd) usando mapagen::include_figure(id = '...')."
+    )
+  } else {
+    list(
+      metric_calculations = sprintf("Always use '%s' for metric calculations (areas, buffers, distances).", pref_proj),
+      styling = "Apply mapagen::theme_from_json() and mapagen::add_cartographic_decorations() in ggplot2 maps.",
+      figure_export = "Export with mapagen::export_iteration(plot, id = '...', caption = '...', summary_data = ...).",
+      report_inclusion = "Include figures in Quarto (.qmd) using mapagen::include_figure(id = '...')."
+    )
+  }
+
+  rules_list <- list(
+    language = lang,
+    concept = concept_txt,
+    crs = list(
+      preferred_projected = pref_proj,
+      preferred_geographic = pref_geo
+    ),
+    style = list(
+      typography = cfg$typography %||% list(),
+      colors = cfg$colors %||% list()
+    ),
+    conventions = conventions_list
+  )
+
+  if (format == "list") {
+    return(rules_list)
+  }
+
+  if (format == "json") {
+    return(jsonlite::toJSON(rules_list, pretty = TRUE, auto_unbox = TRUE))
+  }
+
+  # format == "markdown"
+  md <- if (is_es) {
+    paste0(
+      "### Directrices del Proyecto mapagen\n\n",
+      "- **Idioma preferido:** ", lang, "\n",
+      "- **CRS proyectado (calculos metricos):** `", pref_proj, "`\n",
+      "- **CRS geografico (lat/lon):** `", pref_geo, "`\n\n",
+      "#### Convenciones de Codigo para Agentes:\n",
+      "1. **CRS:** Nunca calcules areas o distancias en coordenadas geograficas. Reproyecta a `", pref_proj, "` usando `sf::st_transform()`.\n",
+      "2. **Estilo:** Usa `mapagen::theme_from_json()` y `mapagen::add_cartographic_decorations()` en figuras ggplot2.\n",
+      "3. **Trazabilidad:** Guarda siempre con `mapagen::export_iteration(plot, id, caption, summary_data = ...)`.\n\n",
+      "#### Concepto del Proyecto:\n",
+      concept_txt, "\n"
+    )
+  } else {
+    paste0(
+      "### mapagen Project Guidelines\n\n",
+      "- **Preferred language:** ", lang, "\n",
+      "- **Projected CRS (metric calculations):** `", pref_proj, "`\n",
+      "- **Geographic CRS (lat/lon):** `", pref_geo, "`\n\n",
+      "#### Agent Code Conventions:\n",
+      "1. **CRS:** Never calculate areas or distances in geographic coordinates. Reproject to `", pref_proj, "` using `sf::st_transform()`.\n",
+      "2. **Style:** Use `mapagen::theme_from_json()` and `mapagen::add_cartographic_decorations()` in ggplot2 figures.\n",
+      "3. **Traceability:** Always save using `mapagen::export_iteration(plot, id, caption, summary_data = ...)`.\n\n",
+      "#### Project Concept:\n",
+      concept_txt, "\n"
+    )
+  }
+
+  md
 }

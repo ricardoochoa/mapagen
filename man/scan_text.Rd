@@ -2,18 +2,18 @@
 % Please edit documentation in R/03_context.R
 \name{scan_text}
 \alias{scan_text}
-\title{Escanea documentos de texto o documentacion}
+\title{Scan text or documentation files}
 \usage{
 scan_text(file_path, max_chars = 5000)
 }
 \arguments{
-\item{file_path}{Ruta al archivo (.txt, .md, .json, .html).}
+\item{file_path}{Path to the text file (.txt, .md, .json, .html).}
 
-\item{max_chars}{Maximo numero de caracteres a leer antes de truncar.}
+\item{max_chars}{Maximum number of characters to read before truncating.}
 }
 \value{
-Lista con el contenido textual truncado.
+List with truncated text content and truncation status.
 }
 \description{
-Escanea documentos de texto o documentacion
+Scan text or documentation files
 }

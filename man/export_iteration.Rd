@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_figures.R
 \name{export_iteration}
 \alias{export_iteration}
-\title{Exporta y registra una iteracion de visualizacion grafica}
+\title{Export and register a visualization iteration}
 \usage{
 export_iteration(
   plot,
@@ -20,43 +20,42 @@ export_iteration(
 )
 }
 \arguments{
-\item{plot}{Objeto grafico de clase \code{ggplot}.}
+\item{plot}{A \code{ggplot} graphic object.}
 
-\item{id}{Identificador unico de la figura (ej. \code{"fig_001"} o \code{"mapa_marginacion"}).}
+\item{id}{Unique figure identifier (e.g. \code{"fig_001"} or \code{"walkability_map"}).}
 
-\item{caption}{Texto explicativo o pie de figura.}
+\item{caption}{Explanatory figure caption.}
 
-\item{sources_id}{Vector con los identificadores de las fuentes de datos utilizadas (ej. \code{c("censo_2020", "directorio_parques")}).}
+\item{sources_id}{Vector of data source identifiers (e.g. \code{c("census_2020", "parks")}).}
 
-\item{summary_data}{\code{data.frame}, \code{tibble} o lista con los valores numericos o agregaciones que sustentan la figura. Si es \code{NULL}, se extrae un resumen del objeto \code{plot}.}
+\item{summary_data}{A \code{data.frame}, \code{tibble}, or list of supporting numerical values. If \code{NULL}, extracts a basic summary from the plot layers.}
 
-\item{output_dir}{Directorio base de salida. Por defecto \code{"output"}.}
+\item{output_dir}{Output base directory. Defaults to \code{"output"}.}
 
-\item{style_path}{Ruta a \code{style.json} para obtener dimensiones y DPI por defecto.}
+\item{style_path}{Path to \code{style.json} to obtain default dimensions and DPI.}
 
-\item{final}{Lógico. Si es \code{TRUE}, genera adicionalmente el archivo vectorial \code{.pdf} y marca el estatus como \code{"final"}.}
+\item{final}{Logical. If \code{TRUE}, additionally generates a vector \code{.pdf} and marks status as \code{"final"}.}
 
-\item{width}{Ancho de la imagen. Si es \code{NULL}, se lee de \code{style.json}.}
+\item{width}{Image width. If \code{NULL}, read from \code{style.json}.}
 
-\item{height}{Alto de la imagen. Si es \code{NULL}, se lee de \code{style.json}.}
+\item{height}{Image height. If \code{NULL}, read from \code{style.json}.}
 
-\item{dpi}{Resolucion de la imagen. Si es \code{NULL}, se lee de \code{style.json}.}
+\item{dpi}{Image resolution (DPI). If \code{NULL}, read from \code{style.json}.}
 
-\item{units}{Unidades de medida (\code{"in"}, \code{"cm"}, \code{"mm"}).}
+\item{units}{Measurement units (\code{"in"}, \code{"cm"}, \code{"mm"}).}
 }
 \value{
-Lista invisible con las rutas de los archivos generados y los metadatos registrados.
+Invisible list with exported artifact paths and registered metadata.
 }
 \description{
-Renderiza el objeto grafico a formato PNG (y opcionalmente PDF), serializa
-los datos numericos de soporte a JSON y registra o actualiza la entrada
-en \code{figures_registry.json} para trazabilidad y ensamblaje en Quarto.
+Renders a \code{ggplot} graphic to PNG (and optionally PDF), serializes supporting
+numerical data to JSON, and logs or updates an entry in \code{figures_registry.json}
+for analytical traceability and Quarto assembly.
 }
 \examples{
 \dontrun{
 library(ggplot2)
 p <- ggplot(cars, aes(speed, dist)) + geom_point() + theme_from_json()
-export_iteration(p, id = "fig_001", caption = "Relacion entre velocidad y distancia",
-                 sources_id = "cars_dataset")
+export_iteration(p, id = "fig_001", caption = "Speed vs Distance", sources_id = "cars")
 }
 }

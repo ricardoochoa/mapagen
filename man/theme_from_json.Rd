@@ -2,7 +2,7 @@
 % Please edit documentation in R/02_styles.R
 \name{theme_from_json}
 \alias{theme_from_json}
-\title{Genera un tema de ggplot2 a partir de un archivo style.json}
+\title{Generate a ggplot2 theme from a style.json file}
 \usage{
 theme_from_json(
   style_path = "style.json",
@@ -11,18 +11,18 @@ theme_from_json(
 )
 }
 \arguments{
-\item{style_path}{Ruta al archivo \code{style.json}.}
+\item{style_path}{Path to the \code{style.json} file.}
 
-\item{base_size}{Tamano base de fuente opcional para sobreescribir el del JSON.}
+\item{base_size}{Optional base font size override.}
 
-\item{base_family}{Familia tipografica base opcional.}
+\item{base_family}{Optional base font family override.}
 }
 \value{
-Objeto de clase \code{theme} de \code{ggplot2}.
+A \code{ggplot2} \code{theme} object.
 }
 \description{
-Traduce las propiedades tipograficas, colores de fondo y bordes
-definidos en \code{style.json} a un objeto \code{theme} de \code{ggplot2}.
+Translates typographic rules, background colors, and borders defined
+in \code{style.json} into a \code{ggplot2} \code{theme} object.
 }
 \examples{
 \dontrun{

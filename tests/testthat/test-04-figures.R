@@ -63,4 +63,37 @@ test_that("export_iteration genera artefactos y actualiza el registro con versio
   expect_true(grepl("Figura fig_test \\(v2\\)", md))
   expect_true(grepl("Segunda version final", md))
   expect_true(grepl("Fuente: mtcars, censo\\.", md))
+
+  # 1. Probar list_figures
+  lf <- list_figures(reg_path)
+  expect_s3_class(lf, "data.frame")
+  expect_equal(nrow(lf), 2)
+  expect_equal(lf$figure_id, c("fig_test", "fig_test"))
+  expect_equal(lf$version, c(1, 2))
+  expect_true(all(lf$has_png))
+  expect_true(all(lf$has_data))
+
+  # 2. Probar get_figure_data
+  fd <- get_figure_data("fig_test", version = 2, registry_path = reg_path)
+  expect_true(fd$success)
+  expect_equal(fd$figure_id, "fig_test")
+  expect_equal(fd$version, 2)
+  expect_equal(fd$data$media_mpg, mean(mtcars$mpg), tolerance = 1e-4)
+
+  # 3. Probar update_figure_metadata
+  upd <- update_figure_metadata("fig_test", version = 1, caption = "Caption modificado", status = "reviewed", registry_path = reg_path)
+  expect_true(upd$success)
+  expect_equal(upd$entry$caption, "Caption modificado")
+  expect_equal(upd$entry$status, "reviewed")
+
+  # 4. Probar delete_figure_version
+  del <- delete_figure_version("fig_test", version = 1, delete_files = TRUE, registry_path = reg_path)
+  expect_true(del$success)
+  expect_equal(del$deleted_version, 1)
+  expect_equal(del$remaining_entries, 1)
+
+  # Verificar que el registro solo tiene version 2 ahora
+  lf_after <- list_figures(reg_path)
+  expect_equal(nrow(lf_after), 1)
+  expect_equal(lf_after$version, 2)
 })

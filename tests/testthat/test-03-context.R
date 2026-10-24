@@ -51,8 +51,39 @@ test_that("build_context y summary_context generan catalogo y sintesis", {
   expect_true(file.exists(out_json))
   expect_equal(catalog$total_files, 1)
 
-  # Resumen
-  summary_txt <- summary_context(out_json)
+  # Resumen markdown
+  summary_txt <- summary_context(out_json, format = "markdown")
   expect_true(grepl("tabla1.csv", summary_txt))
   expect_true(grepl("Tabular", summary_txt))
+
+  # Resumen list y json
+  summary_lst <- summary_context(out_json, format = "list")
+  expect_type(summary_lst, "list")
+  expect_equal(summary_lst$total_files, 1)
+
+  summary_j <- summary_context(out_json, format = "json")
+  expect_type(summary_j, "character")
+  expect_true(grepl("tabla1.csv", summary_j))
+
+  # Probar list_project_data
+  lp <- list_project_data(tmp_dir)
+  expect_s3_class(lp, "data.frame")
+  expect_equal(nrow(lp), 1)
+  expect_equal(lp$file_name[1], "tabla1.csv")
+  expect_equal(lp$type[1], "tabular")
+})
+
+test_that("escaneos soportan objetos directamente en memoria", {
+  df <- data.frame(a = 1:5, b = letters[1:5])
+  res_tab <- scan_tabular(df)
+  expect_true(res_tab$success)
+  expect_equal(res_tab$type, "tabular")
+  expect_equal(res_tab$rows_sample, 5)
+
+  pts <- sf::st_sfc(sf::st_point(c(0, 0)), sf::st_point(c(1, 1)), crs = 3857)
+  sf_df <- sf::st_sf(id = 1:2, geom = pts)
+  res_vec <- scan_vector(sf_df)
+  expect_true(res_vec$success)
+  expect_equal(res_vec$type, "vectorial")
+  expect_true(res_vec$layers[[1]]$spatial_metadata$is_projected)
 })

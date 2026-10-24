@@ -2,18 +2,18 @@
 % Please edit documentation in R/02_styles.R
 \name{get_palette}
 \alias{get_palette}
-\title{Obtiene la paleta de colores configurada en style.json}
+\title{Retrieve color palette configured in style.json}
 \usage{
 get_palette(name = "primary", style_path = "style.json")
 }
 \arguments{
-\item{name}{Nombre de la paleta: \code{"primary"}, \code{"categorical"}, \code{"diverging"}, \code{"sequential"}.}
+\item{name}{Name of the palette: \code{"primary"}, \code{"categorical"}, \code{"diverging"}, \code{"sequential"}.}
 
-\item{style_path}{Ruta al archivo \code{style.json}.}
+\item{style_path}{Path to \code{style.json}.}
 }
 \value{
-Vector de caracteres con codigos hexadecimales.
+Character vector of hexadecimal color codes.
 }
 \description{
-Obtiene la paleta de colores configurada en style.json
+Retrieve color palette configured in style.json
 }

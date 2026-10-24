@@ -2,7 +2,7 @@
 % Please edit documentation in R/02_styles.R
 \name{add_cartographic_decorations}
 \alias{add_cartographic_decorations}
-\title{Agrega elementos cartograficos estandarizados (flecha de norte y barra de escala)}
+\title{Add standardized cartographic decorations (north arrow and scale bar)}
 \usage{
 add_cartographic_decorations(
   plot = NULL,
@@ -12,17 +12,17 @@ add_cartographic_decorations(
 )
 }
 \arguments{
-\item{plot}{Objeto \code{ggplot} al que se anadiran los elementos. Si es \code{NULL}, devuelve una lista de capas lista para sumar \code{+}.}
+\item{plot}{A \code{ggplot} object to decorate. If \code{NULL}, returns a list of layers ready to add with \code{+}.}
 
-\item{style_path}{Ruta al archivo \code{style.json}.}
+\item{style_path}{Path to \code{style.json}.}
 
-\item{north}{Lógico. Si es \code{TRUE}, intenta agregar la flecha de norte si esta habilitada en el JSON.}
+\item{north}{Logical. If \code{TRUE}, attempts to add a north arrow if enabled in the JSON.}
 
-\item{scale}{Lógico. Si es \code{TRUE}, intenta agregar la escala grafica si esta habilitada en el JSON.}
+\item{scale}{Logical. If \code{TRUE}, attempts to add a scale bar if enabled in the JSON.}
 }
 \value{
-Lista de componentes \code{ggplot2} / \code{ggspatial}.
+A decorated \code{ggplot} object or a list of \code{ggplot2} / \code{ggspatial} components.
 }
 \description{
-Lee las directrices de \code{style.json} y aplica las capas de \code{ggspatial} correspondientes.
+Reads guidelines from \code{style.json} and applies corresponding \code{ggspatial} layers.
 }

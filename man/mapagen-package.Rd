@@ -4,9 +4,9 @@
 \name{mapagen-package}
 \alias{mapagen}
 \alias{mapagen-package}
-\title{mapagen: Framework Agéntico para Análisis Geoespacial y Visualización en R}
+\title{mapagen: Agentic Spatial Toolbox for Analysis and Visualization in R}
 \description{
-Orquesta flujos de trabajo de análisis geoespacial y ciencia de datos en R, integrando catalogación automatizada de datos espaciales y tabulares, estandarización de estilos cartográficos y temas ggplot2, gestión iterativa de figuras con sustento numérico, comunicación programática con LLMs vía ellmer y ensamblaje reproducible en Quarto.
+A deterministic toolbox for AI agents operating on geospatial analysis and data science workflows in R. Provides lightweight spatial and tabular data cataloging and inspection, standardized cartographic styles and ggplot2 themes, iterative figure versioning with serialized numerical support, spatial guardrails (CRS and geometry validation), and reproducible Quarto assembly.
 }
 \seealso{
 Useful links:
@@ -17,7 +17,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ricardo Ochoa Sosa \email{ricardo@example.com}
+\strong{Maintainer}: Ricardo Ochoa Sosa \email{ricardo.ochoa@capsus.mx} (CAPSUS)
+
+Authors:
+\itemize{
+  \item Socorro Román Moro \email{socorro.roman@capsus.mx} (CAPSUS)
+}
 
 }
 \keyword{internal}

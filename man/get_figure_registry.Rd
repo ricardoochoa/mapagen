@@ -2,18 +2,18 @@
 % Please edit documentation in R/04_figures.R
 \name{get_figure_registry}
 \alias{get_figure_registry}
-\title{Obtiene el registro completo de figuras del proyecto}
+\title{Retrieve full figure registry of the project}
 \usage{
 get_figure_registry(
   registry_path = file.path("output", "figures_registry.json")
 )
 }
 \arguments{
-\item{registry_path}{Ruta al archivo \code{figures_registry.json}. Por defecto \code{"output/figures_registry.json"}.}
+\item{registry_path}{Path to \code{figures_registry.json}. Defaults to \code{"output/figures_registry.json"}.}
 }
 \value{
-Lista con todas las entradas del registro de figuras.
+List of all figure registry entries.
 }
 \description{
-Obtiene el registro completo de figuras del proyecto
+Retrieve full figure registry of the project
 }

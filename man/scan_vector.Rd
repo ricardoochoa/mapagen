@@ -2,16 +2,16 @@
 % Please edit documentation in R/03_context.R
 \name{scan_vector}
 \alias{scan_vector}
-\title{Escanea y extrae metadatos de archivos vectoriales espaciales}
+\title{Scan and extract metadata from spatial vector files or objects}
 \usage{
-scan_vector(file_path)
+scan_vector(x)
 }
 \arguments{
-\item{file_path}{Ruta al archivo o directorio vectorial.}
+\item{x}{Path to a spatial vector file/directory or an \code{sf}/\code{sfc} object.}
 }
 \value{
-Lista estructurada con metadatos de las capas y atributos.
+Structured list containing layer metadata, CRS, geometries, and attribute schema.
 }
 \description{
-Soporta formatos multicapa y monocapa (.shp, .geojson, .gpkg, .kml, .gdb).
+Supports vector files (.shp, .geojson, .gpkg, .kml, .gdb) or in-memory \code{sf}/\code{sfc} objects.
 }

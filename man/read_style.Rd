@@ -2,16 +2,16 @@
 % Please edit documentation in R/02_styles.R
 \name{read_style}
 \alias{read_style}
-\title{Lee y valida el archivo de configuracion de estilos}
+\title{Read and validate style configuration file}
 \usage{
 read_style(style_path = "style.json")
 }
 \arguments{
-\item{style_path}{Ruta al archivo \code{style.json}. Por defecto \code{"style.json"}.}
+\item{style_path}{Path to the \code{style.json} file. Defaults to \code{"style.json"}.}
 }
 \value{
-Lista con las reglas de estilo parseadas.
+List with parsed style rules.
 }
 \description{
-Lee y valida el archivo de configuracion de estilos
+Read and validate style configuration file
 }

@@ -38,3 +38,28 @@ test_that("get_palette y escalas devuelven colores esperados", {
   s_fill <- scale_fill_mapagen("primary", style_path)
   expect_s3_class(s_fill, "ScaleDiscrete")
 })
+
+test_that("get_project_rules devuelve directrices en formatos list, json y markdown", {
+  style_path <- system.file("templates", "style.json", package = "mapagen")
+  if (style_path == "") style_path <- file.path("inst", "templates", "style.json")
+
+  concept_path <- system.file("templates", "project_concept.md", package = "mapagen")
+  if (concept_path == "") concept_path <- file.path("inst", "templates", "project_concept.md")
+
+  # Formato list
+  rules_l <- get_project_rules(style_path, concept_path, format = "list")
+  expect_type(rules_l, "list")
+  expect_equal(rules_l$language, "es")
+  expect_equal(rules_l$crs$preferred_projected, "EPSG:6362")
+  expect_true(!is.null(rules_l$conventions$metric_calculations))
+
+  # Formato json
+  rules_j <- get_project_rules(style_path, concept_path, format = "json")
+  expect_type(rules_j, "character")
+  expect_true(grepl("EPSG:6362", rules_j))
+
+  # Formato markdown
+  rules_m <- get_project_rules(style_path, concept_path, format = "markdown")
+  expect_type(rules_m, "character")
+  expect_true(grepl("Directrices del Proyecto mapagen", rules_m))
+})

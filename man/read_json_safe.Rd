@@ -2,17 +2,17 @@
 % Please edit documentation in R/00_globals.R
 \name{read_json_safe}
 \alias{read_json_safe}
-\title{Lee un archivo JSON de forma segura con jsonlite}
+\title{Safely read a JSON file using jsonlite}
 \usage{
 read_json_safe(path)
 }
 \arguments{
-\item{path}{Ruta al archivo JSON}
+\item{path}{Path to the JSON file.}
 }
 \value{
-Lista con el contenido parseado
+Parsed list content.
 }
 \description{
-Lee un archivo JSON de forma segura con jsonlite
+Safely read a JSON file using jsonlite
 }
 \keyword{internal}

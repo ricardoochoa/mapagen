@@ -2,7 +2,7 @@
 % Please edit documentation in R/03_context.R
 \name{build_context}
 \alias{build_context}
-\title{Construye el Catalogo de Datos del Proyecto (Repomix Geoespacial)}
+\title{Build project data catalog (geospatial repomix)}
 \usage{
 build_context(
   dir_path = "data",
@@ -11,19 +11,18 @@ build_context(
 )
 }
 \arguments{
-\item{dir_path}{Ruta al directorio a escanear. Por defecto \code{"data"}.}
+\item{dir_path}{Path to the directory to scan. Defaults to \code{"data"}.}
 
-\item{output_file}{Ruta del archivo JSON consolidado de salida. Por defecto \code{"context_metadata.json"}.}
+\item{output_file}{Output JSON file path. Defaults to \code{"context_metadata.json"}.}
 
-\item{include_non_supported}{Logico. Si es \code{TRUE}, guarda un archivo adicional con extensiones no procesadas.}
+\item{include_non_supported}{Logical. If \code{TRUE}, logs unsupported files to an auxiliary JSON file.}
 }
 \value{
-Lista invisible con el contenido consolidado del catalogo.
+Invisible list containing the consolidated catalog.
 }
 \description{
-Escanea recursivamente un directorio de datos (por defecto \verb{data/}),
-analiza archivos vectoriales, raster, tabulares y documentales,
-y genera el archivo \code{context_metadata.json}.
+Recursively scans a data directory (defaults to \verb{data/}), inspects vector,
+raster, tabular, and document files, and generates \code{context_metadata.json}.
 }
 \examples{
 \dontrun{

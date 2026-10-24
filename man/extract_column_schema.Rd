@@ -2,16 +2,16 @@
 % Please edit documentation in R/03_context.R
 \name{extract_column_schema}
 \alias{extract_column_schema}
-\title{Extrae el esquema resumido de columnas de un data.frame o tibble}
+\title{Extract column summary schema from a data.frame or tibble}
 \usage{
 extract_column_schema(df)
 }
 \arguments{
-\item{df}{Un data.frame o tibble.}
+\item{df}{A data.frame or tibble.}
 }
 \value{
-Lista con el esquema de cada columna (nombre, tipo, porcentaje de NAs y valores de muestra).
+A list with schema information for each column (name, type, NA percentage, sample values).
 }
 \description{
-Extrae el esquema resumido de columnas de un data.frame o tibble
+Extract column summary schema from a data.frame or tibble
 }

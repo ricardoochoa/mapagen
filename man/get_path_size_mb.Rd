@@ -2,16 +2,16 @@
 % Please edit documentation in R/03_context.R
 \name{get_path_size_mb}
 \alias{get_path_size_mb}
-\title{Calcula el tamano en megabytes de un archivo o directorio}
+\title{Calculate size in megabytes of a file or directory}
 \usage{
 get_path_size_mb(path)
 }
 \arguments{
-\item{path}{Ruta al archivo o directorio (por ejemplo un .gdb).}
+\item{path}{Path to the file or directory (e.g. a .gdb folder).}
 }
 \value{
-Numero que representa el tamano en MB redondeado a 2 decimales.
+Number representing the size in MB rounded to 2 decimal places.
 }
 \description{
-Calcula el tamano en megabytes de un archivo o directorio
+Calculate size in megabytes of a file or directory
 }

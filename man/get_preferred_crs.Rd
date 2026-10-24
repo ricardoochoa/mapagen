@@ -2,7 +2,7 @@
 % Please edit documentation in R/02_styles.R
 \name{get_preferred_crs}
 \alias{get_preferred_crs}
-\title{Obtiene el CRS preferido configurado en style.json}
+\title{Retrieve preferred Coordinate Reference System (CRS) from style.json}
 \usage{
 get_preferred_crs(
   style_path = "style.json",
@@ -10,13 +10,13 @@ get_preferred_crs(
 )
 }
 \arguments{
-\item{style_path}{Ruta a \code{style.json}.}
+\item{style_path}{Path to \code{style.json}.}
 
-\item{type}{Tipo de CRS: \code{"projected"} (metrico para calculos) o \code{"geographic"} (lat/lon).}
+\item{type}{CRS type: \code{"projected"} (metric for calculations) or \code{"geographic"} (lat/lon).}
 }
 \value{
-Cadena con el codigo EPSG (ej. \code{"EPSG:6362"}).
+Character string containing the EPSG code (e.g. \code{"EPSG:6362"}).
 }
 \description{
-Obtiene el CRS preferido configurado en style.json
+Retrieve preferred Coordinate Reference System (CRS) from style.json
 }

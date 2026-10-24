@@ -2,7 +2,7 @@
 % Please edit documentation in R/02_styles.R
 \name{scale_color_mapagen}
 \alias{scale_color_mapagen}
-\title{Escalas de color (lineas/puntos) de ggplot2 basadas en style.json}
+\title{ggplot2 color scales based on style.json}
 \usage{
 scale_color_mapagen(
   palette = "primary",
@@ -12,17 +12,17 @@ scale_color_mapagen(
 )
 }
 \arguments{
-\item{palette}{Nombre de la paleta a utilizar.}
+\item{palette}{Name of the palette to use.}
 
-\item{style_path}{Ruta a \code{style.json}.}
+\item{style_path}{Path to \code{style.json}.}
 
-\item{discrete}{Lógico. ¿Es para variable discreta o continua?}
+\item{discrete}{Logical. Whether the scale is for discrete or continuous data.}
 
-\item{...}{Argumentos adicionales pasados a \code{scale_color_manual} o \code{scale_color_gradientn}.}
+\item{...}{Additional arguments passed to \code{scale_color_manual} or \code{scale_color_gradientn}.}
 }
 \value{
-Escala de \code{ggplot2}.
+A \code{ggplot2} scale.
 }
 \description{
-Escalas de color (lineas/puntos) de ggplot2 basadas en style.json
+ggplot2 color scales based on style.json
 }
