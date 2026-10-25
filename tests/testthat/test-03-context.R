@@ -87,3 +87,27 @@ test_that("escaneos soportan objetos directamente en memoria", {
   expect_equal(res_vec$type, "vectorial")
   expect_true(res_vec$layers[[1]]$spatial_metadata$is_projected)
 })
+
+test_that("scan_text maneja correctamente archivos con codificacion no UTF-8 (latin1 y UTF-16)", {
+  tmp_latin1 <- tempfile(fileext = ".txt")
+  tmp_utf16 <- tempfile(fileext = ".txt")
+  on.exit(unlink(c(tmp_latin1, tmp_utf16)), add = TRUE)
+
+  # Archivo en Latin-1 con caracteres especiales en espanol
+  texto_latin1 <- iconv("Informacion geografica y metadatos: Cancun, Yucatan, Mexico, erosion costera", to = "latin1")
+  writeBin(charToRaw(texto_latin1), tmp_latin1)
+
+  res_latin1 <- scan_text(tmp_latin1)
+  expect_true(res_latin1$success)
+  expect_true(validUTF8(res_latin1$content))
+  expect_true(grepl("Cancun|Cancún", res_latin1$content))
+
+  # Archivo en UTF-16LE con BOM
+  bom_le <- as.raw(c(0xff, 0xfe))
+  texto_utf16 <- iconv("Distribucion de manglares y humedales", to = "UTF-16LE")
+  writeBin(c(bom_le, charToRaw(texto_utf16)), tmp_utf16)
+
+  res_utf16 <- scan_text(tmp_utf16)
+  expect_true(res_utf16$success)
+  expect_true(validUTF8(res_utf16$content))
+})

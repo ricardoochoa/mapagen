@@ -88,11 +88,14 @@ list_project_data <- function(dir_path = "data") {
 extract_column_schema <- function(df) {
   lapply(names(df), function(col_name) {
     col_data <- df[[col_name]]
+    samples <- as.character(utils::head(unique(stats::na.omit(col_data)), 3))
+    clean_samples <- iconv(samples, to = "UTF-8", sub = "byte")
+    clean_col <- iconv(col_name, to = "UTF-8", sub = "byte")
     list(
-      column = col_name,
+      column = clean_col,
       type = paste(class(col_data), collapse = ", "),
       na_percentage = round(sum(is.na(col_data)) / max(length(col_data), 1) * 100, 2),
-      sample_values = as.character(utils::head(unique(stats::na.omit(col_data)), 3))
+      sample_values = clean_samples
     )
   })
 }
@@ -159,8 +162,13 @@ scan_vector <- function(x) {
       sf::read_sf(file_path, layer = layer_name, as_tibble = TRUE, n_max = 50, quiet = TRUE),
       error = function(e) {
         tryCatch(
-          sf::read_sf(file_path, layer = layer_name, as_tibble = TRUE, quiet = TRUE),
-          error = function(e2) NULL
+          sf::st_read(file_path, layer = layer_name, query = sprintf("SELECT * FROM \"%s\" LIMIT 50", layer_name), as_tibble = TRUE, quiet = TRUE),
+          error = function(e2) {
+            tryCatch(
+              sf::read_sf(file_path, layer = layer_name, as_tibble = TRUE, quiet = TRUE),
+              error = function(e3) NULL
+            )
+          }
         )
       }
     )
@@ -276,7 +284,15 @@ scan_tabular <- function(x, ext = if (is.character(x)) tools::file_ext(x) else "
   ext <- tolower(ext)
   sample_data <- tryCatch({
     if (ext %in% c("csv")) {
-      readr::read_csv(file_path, n_max = 50, show_col_types = FALSE)
+      guessed_enc <- tryCatch({
+        g <- readr::guess_encoding(file_path, n_max = 1000)
+        if (nrow(g) > 0 && !is.na(g$encoding[1]) && g$confidence[1] > 0.4) g$encoding[1] else "UTF-8"
+      }, error = function(e) "UTF-8")
+      loc <- tryCatch(readr::locale(encoding = guessed_enc), error = function(e) readr::default_locale())
+      tryCatch(
+        readr::read_csv(file_path, n_max = 50, show_col_types = FALSE, locale = loc),
+        error = function(e) readr::read_csv(file_path, n_max = 50, show_col_types = FALSE)
+      )
     } else if (ext %in% c("xlsx", "xls")) {
       readxl::read_excel(file_path, n_max = 50)
     }
@@ -306,9 +322,46 @@ scan_text <- function(file_path, max_chars = 5000) {
     return(list(success = FALSE, type = "documento", error = sprintf("File does not exist: %s", file_path)))
   }
 
-  text_content <- tryCatch(readLines(file_path, warn = FALSE), error = function(e) "")
-  collapsed_text <- paste(text_content, collapse = "\n")
-  is_truncated <- nchar(collapsed_text) > max_chars
+  file_size <- file.info(file_path)$size
+  if (is.na(file_size) || file_size == 0) {
+    return(list(success = TRUE, type = "documento", truncated = FALSE, content = ""))
+  }
+
+  # Detectar BOM para codificaciones UTF-16
+  bom <- tryCatch(readBin(file_path, "raw", n = min(file_size, 4)), error = function(e) raw(0))
+  from_enc <- ""
+  if (length(bom) >= 2 && bom[1] == as.raw(0xff) && bom[2] == as.raw(0xfe)) {
+    from_enc <- "UTF-16LE"
+  } else if (length(bom) >= 2 && bom[1] == as.raw(0xfe) && bom[2] == as.raw(0xff)) {
+    from_enc <- "UTF-16BE"
+  }
+
+  lines <- tryCatch({
+    if (nzchar(from_enc)) {
+      readLines(file_path, warn = FALSE, encoding = from_enc)
+    } else {
+      readLines(file_path, warn = FALSE, encoding = "UTF-8")
+    }
+  }, error = function(e) NULL)
+
+  if (is.null(lines) || !all(validUTF8(lines))) {
+    # Fallback para codificaciones tipo ISO-8859-1 / Latin-1 comunes en metadatos de INEGI/CONABIO
+    lines_conv <- tryCatch(readLines(file_path, warn = FALSE, encoding = "latin1"), error = function(e) NULL)
+    if (!is.null(lines_conv)) {
+      lines <- iconv(lines_conv, from = "latin1", to = "UTF-8", sub = "")
+    } else {
+      lines <- iconv(lines, from = "", to = "UTF-8", sub = "")
+    }
+  }
+
+  collapsed_text <- paste(lines, collapse = "\n")
+  if (!validUTF8(collapsed_text)) {
+    collapsed_text <- iconv(collapsed_text, to = "UTF-8", sub = "")
+  }
+
+  is_truncated <- tryCatch(nchar(collapsed_text, allowNA = TRUE) > max_chars, error = function(e) FALSE)
+  if (is.na(is_truncated)) is_truncated <- FALSE
+
   if (is_truncated) {
     collapsed_text <- paste0(substr(collapsed_text, 1, max_chars), "\n... [TRUNCATED FOR TOKEN SAFETY]")
   }

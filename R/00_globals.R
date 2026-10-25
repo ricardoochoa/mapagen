@@ -33,6 +33,31 @@ read_json_safe <- function(path) {
   jsonlite::fromJSON(path, simplifyVector = FALSE)
 }
 
+#' Recursively sanitize strings and names in R objects to ensure valid UTF-8
+#' @param x Any R object (list, vector, character, etc.).
+#' @return The sanitized object with valid UTF-8 characters and names.
+#' @keywords internal
+sanitize_utf8 <- function(x) {
+  if (is.character(x)) {
+    invalid <- !validUTF8(x)
+    if (any(invalid)) {
+      x[invalid] <- iconv(x[invalid], from = "latin1", to = "UTF-8", sub = "")
+      still_invalid <- !validUTF8(x)
+      if (any(still_invalid)) {
+        x[still_invalid] <- iconv(x[still_invalid], from = "", to = "UTF-8", sub = "")
+      }
+    }
+    enc2utf8(x)
+  } else if (is.list(x)) {
+    if (!is.null(names(x))) {
+      names(x) <- sanitize_utf8(names(x))
+    }
+    lapply(x, sanitize_utf8)
+  } else {
+    x
+  }
+}
+
 #' Safely write a formatted JSON file using jsonlite
 #' @param obj R object to serialize.
 #' @param path Output path.
@@ -41,6 +66,7 @@ read_json_safe <- function(path) {
 write_json_safe <- function(obj, path) {
   dir_name <- dirname(path)
   if (!dir.exists(dir_name)) dir.create(dir_name, recursive = TRUE, showWarnings = FALSE)
-  jsonlite::write_json(obj, path, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  clean_obj <- sanitize_utf8(obj)
+  jsonlite::write_json(clean_obj, path, pretty = TRUE, auto_unbox = TRUE, null = "null")
   invisible(path)
 }
